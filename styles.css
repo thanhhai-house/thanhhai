@@ -1,14 +1,14 @@
 /* =====================
-   GLOBAL
+   RESET + ROOT
 ===================== */
 :root{
-  --bg: #f6fafc;
-  --card: #ffffff;
-  --primary: #3b82f6;
-  --primary-soft: #e0edff;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+  --bg: #f2f7f9;          /* nền tổng */
+  --card: #ffffff;       /* nền card */
+  --primary: #4f8cff;    /* xanh pastel */
+  --primary-soft: #e8f0ff;
+  --text: #1f2937;       /* chữ chính */
+  --muted: #6b7280;      /* chữ phụ */
+  --border: #dde3ea;     /* viền */
 }
 
 *{
@@ -22,39 +22,42 @@ body{
   color:var(--text);
 }
 
+/* =====================
+   LINK
+===================== */
 a{
   color:inherit;
   text-decoration:none;
 }
 
 /* =====================
-   HEADER / TOPBAR
+   HEADER
 ===================== */
 .topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 24px;
+  padding:16px 24px;
   background:#ffffff;
   border-bottom:1px solid var(--border);
 }
 
 .topbar h1{
   margin:0;
-  font-size:20px;
+  font-size:22px;
   color:var(--primary);
 }
 
 .topbar a{
-  padding:8px 14px;
-  border-radius:8px;
+  padding:8px 16px;
+  border-radius:10px;
   background:var(--primary-soft);
   color:var(--primary);
   font-weight:600;
 }
 
 /* =====================
-   SLIDER / BANNER
+   BANNER / SLIDER
 ===================== */
 .slider img{
   width:100%;
@@ -64,7 +67,7 @@ a{
 }
 
 /* =====================
-   FILTERS
+   FILTER
 ===================== */
 .filters{
   display:flex;
@@ -75,46 +78,47 @@ a{
 }
 
 select{
-  padding:10px 12px;
-  border-radius:10px;
+  padding:10px 14px;
+  border-radius:12px;
   border:1px solid var(--border);
   background:#ffffff;
-  color:var(--text);
+  font-size:14px;
 }
 
 /* =====================
-   PRODUCT GRID
+   GRID + CARD
 ===================== */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:18px;
-  padding:24px;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:20px;
+  padding:28px;
 }
 
 .card{
   background:var(--card);
-  border-radius:16px;
+  border-radius:18px;
   border:1px solid var(--border);
-  padding:12px;
-  transition:.2s;
+  padding:14px;
+  transition:.25s ease;
 }
 
 .card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  transform:translateY(-6px);
+  box-shadow:0 14px 30px rgba(0,0,0,.08);
 }
 
 .card img{
   width:100%;
   height:160px;
   object-fit:cover;
-  border-radius:12px;
+  border-radius:14px;
   margin-bottom:10px;
 }
 
 .card b{
   display:block;
+  font-size:16px;
   margin-bottom:4px;
 }
 
@@ -127,11 +131,11 @@ select{
    PRODUCT DETAIL
 ===================== */
 .product-detail{
-  display:flex;
-  gap:32px;
-  padding:32px;
   max-width:1100px;
   margin:auto;
+  padding:36px 24px;
+  display:flex;
+  gap:32px;
 }
 
 .detail-img{
@@ -147,7 +151,6 @@ select{
 .detail-info p{
   margin:6px 0;
   color:var(--muted);
-  font-size:15px;
 }
 
 /* =====================
@@ -156,7 +159,7 @@ select{
 .admin-header{
   background:#ffffff;
   border-bottom:1px solid var(--border);
-  padding:14px 24px;
+  padding:16px 24px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -164,7 +167,7 @@ select{
 
 .admin-header h1{
   margin:0;
-  font-size:18px;
+  font-size:20px;
   color:var(--primary);
 }
 
@@ -182,23 +185,25 @@ select{
 .admin-card{
   background:#ffffff;
   border:1px solid var(--border);
-  border-radius:20px;
-  padding:24px;
-  max-width:420px;
+  border-radius:22px;
+  padding:26px;
+  max-width:440px;
   width:100%;
 }
 
 .admin-card h3{
   margin-top:0;
+  margin-bottom:14px;
   color:var(--primary);
 }
 
 .admin-card input{
   width:100%;
-  padding:10px 12px;
+  padding:12px 14px;
   margin-bottom:12px;
-  border-radius:10px;
+  border-radius:12px;
   border:1px solid var(--border);
+  font-size:14px;
 }
 
 .row{
@@ -211,14 +216,14 @@ select{
 ===================== */
 .preview-box{
   height:200px;
-  border-radius:14px;
-  border:1px dashed var(--border);
+  border-radius:16px;
+  border:2px dashed var(--border);
+  background:#f9fbfd;
   display:flex;
   align-items:center;
   justify-content:center;
-  margin-bottom:12px;
+  margin-bottom:14px;
   overflow:hidden;
-  background:#fafafa;
 }
 
 .preview-box img{
@@ -236,16 +241,17 @@ select{
 }
 
 button{
-  padding:10px 16px;
-  border-radius:12px;
+  padding:12px 18px;
+  border-radius:14px;
   border:none;
   cursor:pointer;
   font-weight:600;
+  font-size:14px;
 }
 
 button.primary{
   background:var(--primary);
-  color:white;
+  color:#ffffff;
 }
 
 button.soft{
