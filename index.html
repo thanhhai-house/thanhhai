@@ -1,1 +1,86 @@
 
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Kiot</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">🧾 Mini Kiot</div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="lookup">Tra cứu</button>
+      <button class="tab" data-tab="stats">Thống kê</button>
+      <a class="tab link" href="./data/products.json" target="_blank" rel="noopener">Xem JSON</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <!-- LOOKUP -->
+    <section id="tab-lookup" class="grid two">
+      <div class="card">
+        <div class="split">
+          <div>
+            <div class="title">Tra cứu sản phẩm</div>
+            <div class="muted">Tìm theo SKU / Barcode / Tên / Danh mục</div>
+          </div>
+          <button class="btn ghost" id="btnReload">↻ Tải lại</button>
+        </div>
+
+        <div class="row mt12">
+          <div class="field flex2">
+            <label>Từ khóa</label>
+            <input id="q" placeholder="Ví dụ: SP001 / 893... / kem chống nắng" />
+          </div>
+          <div class="field w160">
+            <label>&nbsp;</label>
+            <button class="btn" id="btnSearch">Tìm</button>
+          </div>
+        </div>
+
+        <div id="results" class="list mt12"></div>
+      </div>
+
+      <div class="card">
+        <div class="title">Chi tiết</div>
+        <div class="muted">Chọn 1 sản phẩm trong danh sách.</div>
+        <div id="detail" class="mt12"></div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="tab-stats" class="card hide">
+      <div class="split">
+        <div>
+          <div class="title">Thống kê</div>
+          <div class="muted">Tính từ data/products.json</div>
+        </div>
+        <button class="btn" id="btnStats">↻ Tải thống kê</button>
+      </div>
+
+      <div class="kpis mt12">
+        <div class="kpi"><div class="muted">Tổng sản phẩm</div><div class="v" id="k_total">-</div></div>
+        <div class="kpi"><div class="muted">Tổng tồn</div><div class="v" id="k_stock">-</div></div>
+        <div class="kpi"><div class="muted">Giá trị tồn (giá bán)</div><div class="v" id="k_value_price">-</div></div>
+        <div class="kpi"><div class="muted">Giá trị tồn (giá vốn)</div><div class="v" id="k_value_cost">-</div></div>
+      </div>
+
+      <div class="mt12">
+        <div class="title s14">Theo danh mục</div>
+        <div class="muted">Sắp xếp theo tồn giảm dần</div>
+        <div class="tableWrap mt8">
+          <table>
+            <thead><tr><th>Danh mục</th><th>Số SP</th><th>Tồn</th></tr></thead>
+            <tbody id="cat_rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hide"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
