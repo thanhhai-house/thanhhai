@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Kho Phụ Tùng</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__row">
+      <div class="brand">
+        <div class="brand__logo">🛠️</div>
+        <div class="brand__text">
+          <div class="brand__name">Admin • Kho Phụ Tùng</div>
+          <div class="brand__sub">Thêm/Sửa/Xoá • Upload ảnh • Nhập/Xuất • Lịch sử</div>
+        </div>
+      </div>
+      <div class="search">
+        <a class="btn btn--ghost" href="./index.html">← Về trang shop</a>
+        <button class="btn btn--ghost" id="btnReload">↻ Tải dữ liệu</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" style="grid-template-columns: 420px 1fr;">
+    <aside class="sidebar">
+      <div class="card">
+        <div class="card__title">Sản phẩm</div>
+
+        <div class="row2">
+          <div class="field">
+            <label>ID (duy nhất)</label>
+            <input id="p_id" placeholder="vd: p_001">
+          </div>
+          <div class="field">
+            <label>OEM</label>
+            <input id="p_oem" placeholder="vd: P559000">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tên sản phẩm</label>
+          <input id="p_name" placeholder="vd: Lọc nhớt Cummins">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Loại (category)</label>
+            <input id="p_category" placeholder="vd: Lọc nhớt / Lọc gió / Lọc dầu">
+          </div>
+          <div class="field">
+            <label>Thương hiệu (brand)</label>
+            <input id="p_brand" placeholder="vd: Donaldson">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Thông tin</label>
+          <input id="p_info" placeholder="Ghi chú, mô tả...">
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Giá</label>
+            <input id="p_price" type="number" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Tồn</label>
+            <input id="p_stock" type="number" placeholder="0">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Đã bán</label>
+            <input id="p_sold" type="number" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Image URL (tự điền sau upload)</label>
+            <input id="p_imageUrl" placeholder="https://drive.google.com/uc?...">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Upload ảnh</label>
+          <input id="imgFile" type="file" accept="image/*">
+          <div class="muted">Chọn ảnh → bấm Upload → URL tự điền.</div>
+          <div style="margin-top:10px">
+            <img id="imgPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.1)" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="btnUpload">Upload ảnh</button>
+          <button class="btn" id="btnSave">Lưu (thêm/sửa)</button>
+          <button class="btn btn--ghost" id="btnDelete">Xoá</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="card__title">Thêm nhanh Brand / Category</div>
+        <div class="row2">
+          <div class="field">
+            <label>Brand mới</label>
+            <input id="newBrand" placeholder="vd: Fleetguard">
+          </div>
+          <div class="field">
+            <label>Category mới</label>
+            <input id="newCat" placeholder="vd: Lọc nhiên liệu">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn--ghost" id="btnAddBrand">Thêm Brand</button>
+          <button class="btn btn--ghost" id="btnAddCat">Thêm Category</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="card__title">Nhập / Xuất kho</div>
+        <div class="row2">
+          <div class="field">
+            <label>Product ID</label>
+            <input id="mv_id" placeholder="vd: p_001">
+          </div>
+          <div class="field">
+            <label>Số lượng</label>
+            <input id="mv_qty" type="number" placeholder="vd: 5">
+          </div>
+        </div>
+        <div class="field">
+          <label>Ghi chú</label>
+          <input id="mv_note" placeholder="vd: nhập lô 12/12, bán khách A...">
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnIn">Nhập kho (+)</button>
+          <button class="btn btn--ghost" id="btnOut">Xuất bán (-)</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="card">
+        <div class="content__top">
+          <div class="title">Danh sách sản phẩm (bấm để nạp vào form)</div>
+          <div class="muted" id="count">—</div>
+        </div>
+        <div class="field">
+          <label>Tìm nhanh (OEM / tên / brand / category)</label>
+          <input id="quickQ" placeholder="vd: P559000 / donaldson / lọc nhớt...">
+        </div>
+        <div id="list" class="grid" style="grid-template-columns:repeat(2,1fr)"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <div class="content__top">
+          <div class="title">Lịch sử nhập / xuất</div>
+          <div class="muted">IN = nhập kho, OUT = bán, DEL = xoá</div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Lọc</label>
+            <input id="his_q" placeholder="OEM / productId / note / email">
+          </div>
+          <div class="field">
+            <label>Giới hạn</label>
+            <input id="his_limit" type="number" value="200">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn--ghost" id="btnHistory">Tải lịch sử</button>
+        </div>
+        <pre id="his_box" style="white-space:pre-wrap;background:rgba(11,20,40,.8);border:1px solid rgba(255,255,255,.1);padding:12px;border-radius:16px;max-height:420px;overflow:auto"></pre>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast hide" id="toast"></div>
+  <script src="./admin.js"></script>
+</body>
+</html>
