@@ -1,4 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin</title>
+</head>
+<body>
+<h2>ADMIN</h2>
+
+<input id="id" placeholder="ID">
+<input id="oem" placeholder="OEM">
+<input id="name" placeholder="Tên">
+<input id="brand" placeholder="Brand">
+<input id="category" placeholder="Category">
+<input id="price" placeholder="Giá">
+<input id="stock" placeholder="Tồn">
+<input type="file" id="img">
+
+<button onclick="upload()">Upload ảnh</button>
+<button onclick="save()">Lưu</button>
+
 <hr>
-<h3>Danh sách sản phẩm</h3>
-<input id="search" placeholder="Tìm theo OEM / tên / brand">
-<div id="adminList" class="grid"></div>
+<input id="qty" placeholder="Số lượng">
+<button onclick="stockIn()">Nhập kho</button>
+<button onclick="stockOut()">Xuất bán</button>
+
+<script src="admin.js"></script>
+</body>
+</html>
