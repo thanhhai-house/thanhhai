@@ -3,12 +3,26 @@
     "id": "p_001",
     "oem": "P559000",
     "brand": "donalson",
+    "partType": "Lọc nhớt",
     "name": "Lọc nhớt Cumin",
     "info": "Phụ tùng lọc nhớt cho động cơ Cummins.",
     "price": 120000,
     "stock": 5,
     "sold": 10,
     "image": "https://images.unsplash.com/photo-1585386959984-a41552231693?auto=format&fit=crop&w=900&q=60",
+    "updatedAt": "2025-12-12T00:00:00.000Z"
+  },
+  {
+    "id": "p_002",
+    "oem": "LF9009",
+    "brand": "fleetguard",
+    "partType": "Lọc dầu",
+    "name": "Lọc dầu Fleetguard LF9009",
+    "info": "Dùng cho xe tải/đầu kéo (bạn sửa theo thực tế).",
+    "price": 150000,
+    "stock": 20,
+    "sold": 3,
+    "image": "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=900&q=60",
     "updatedAt": "2025-12-12T00:00:00.000Z"
   }
 ]
