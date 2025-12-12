@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Chi tiết sản phẩm</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <a href="index.html">← Quay về trưng bày</a>
+</header>
+
+<main class="product-detail">
+  <img id="img" class="detail-img">
+  <div class="detail-info">
+    <h1 id="name"></h1>
+    <p id="oem"></p>
+    <p id="brand"></p>
+    <p id="category"></p>
+    <p id="price"></p>
+    <p id="stock"></p>
+  </div>
+</main>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbzfiyw-8CmWo4SzwGyereCQQog8R5f2sOVa-nCFN_sW-fZZ8ankH1LPqWkoKrrfMtF3Pw/exec";
+const id=new URLSearchParams(location.search).get("id");
+
+fetch(API+"?path=products")
+.then(r=>r.json())
+.then(list=>{
+  const p=list.find(x=>x.id===id);
+  if(!p)return;
+  img.src=p.imageUrl;
+  name.textContent=p.name;
+  oem.textContent="OEM: "+p.oem;
+  brand.textContent="Thương hiệu: "+p.brand;
+  category.textContent="Loại: "+p.category;
+  price.textContent="Giá: "+p.price.toLocaleString()+"đ";
+  stock.textContent="Tồn kho: "+p.stock;
+});
+</script>
+
+</body>
+</html>
