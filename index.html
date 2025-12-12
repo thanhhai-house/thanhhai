@@ -1,162 +1,18 @@
 <!doctype html>
-<html lang="vi">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
   <title>Kho Phụ Tùng</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="header">
-    <div class="header__row">
-      <div class="brand">
-        <div class="brand__logo">⚙️</div>
-        <div class="brand__text">
-          <div class="brand__name">Kho Phụ Tùng</div>
-          <div class="brand__sub">Tra cứu • Danh mục • Tồn kho • Đã bán</div>
-        </div>
-      </div>
+<header>
+  <h1>🛠 Kho Phụ Tùng</h1>
+  <a href="admin.html">Admin</a>
+</header>
 
-      <div class="search">
-        <button class="catBtn" id="catBtn" aria-haspopup="true" aria-expanded="false">☰ Danh mục</button>
+<div id="products" class="grid"></div>
 
-        <div class="search__box">
-          <span class="search__icon">🔎</span>
-          <input id="q" placeholder="Tìm theo OEM / thương hiệu / tên / thông tin..." />
-          <button class="search__clear" id="clearQ" title="Xoá">✕</button>
-        </div>
-
-        <button class="btn btn--ghost" id="reloadBtn">↻ Tải lại</button>
-      </div>
-
-      <div class="header__right">
-        <div class="pill" id="kpiTotal">— SP</div>
-        <div class="pill" id="kpiStock">— tồn</div>
-        <div class="pill" id="kpiSold">— bán</div>
-      </div>
-    </div>
-
-    <div class="mega hide" id="mega">
-      <div class="mega__grid">
-        <div class="mega__col">
-          <div class="mega__title">Danh mục</div>
-          <div class="mega__list" id="megaCats"></div>
-        </div>
-        <div class="mega__col">
-          <div class="mega__title">Thương hiệu</div>
-          <div class="mega__chips" id="megaBrands"></div>
-        </div>
-        <div class="mega__col mega__col--note">
-          <div class="mega__title">Mẹo</div>
-          <div class="note">
-            <div class="note__item">• Gõ <b>P559000</b> để tìm theo OEM</div>
-            <div class="note__item">• Lọc theo Danh mục/Brand ở thanh trái</div>
-            <div class="note__item">• Bấm sản phẩm để xem chi tiết</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <aside class="sidebar">
-      <div class="card">
-        <div class="card__title">Bộ lọc</div>
-
-        <div class="field">
-          <label>Danh mục (partType)</label>
-          <select id="catFilter"></select>
-        </div>
-
-        <div class="field">
-          <label>Thương hiệu</label>
-          <select id="brandFilter"></select>
-        </div>
-
-        <div class="field">
-          <label>Trạng thái tồn</label>
-          <select id="stockFilter">
-            <option value="all">Tất cả</option>
-            <option value="in">Còn hàng</option>
-            <option value="out">Hết hàng</option>
-            <option value="low">Sắp hết (≤ 3)</option>
-          </select>
-        </div>
-
-        <div class="row2">
-          <div class="field">
-            <label>Giá từ</label>
-            <input id="minPrice" type="number" placeholder="0" />
-          </div>
-          <div class="field">
-            <label>Giá đến</label>
-            <input id="maxPrice" type="number" placeholder="0" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Sắp xếp</label>
-          <select id="sortBy">
-            <option value="updatedDesc">Mới cập nhật</option>
-            <option value="priceAsc">Giá tăng dần</option>
-            <option value="priceDesc">Giá giảm dần</option>
-            <option value="stockDesc">Tồn giảm dần</option>
-            <option value="soldDesc">Bán giảm dần</option>
-            <option value="nameAsc">Tên A→Z</option>
-          </select>
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="applyBtn">Áp dụng</button>
-          <button class="btn btn--ghost" id="resetBtn">Đặt lại</button>
-        </div>
-
-        <div class="muted" id="hint"></div>
-      </div>
-
-      <div class="card">
-        <div class="card__title">Quick Brand</div>
-        <div class="chipWrap" id="brandChips"></div>
-      </div>
-
-      <div class="card">
-        <div class="card__title">Dữ liệu</div>
-        <div class="muted">Bạn sửa ở <b>data/products.json</b></div>
-        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
-          <a class="btn btn--ghost" href="./data/products.json" target="_blank" rel="noopener">Mở JSON</a>
-        </div>
-      </div>
-    </aside>
-
-    <section class="content">
-      <div class="content__top">
-        <div class="title">Sản phẩm</div>
-        <div class="muted" id="resultCount">—</div>
-      </div>
-
-      <div class="grid" id="grid"></div>
-    </section>
-  </main>
-
-  <div class="modal hide" id="modal">
-    <div class="modal__backdrop" id="modalClose"></div>
-    <div class="modal__panel">
-      <div class="modal__top">
-        <div class="modal__title" id="mTitle">Chi tiết</div>
-        <button class="iconBtn" id="modalX" title="Đóng">✕</button>
-      </div>
-
-      <div class="modal__body" id="modalBody"></div>
-
-      <div class="modal__bottom">
-        <button class="btn btn--ghost" id="copyOEM">Copy OEM</button>
-        <button class="btn btn--ghost" id="copyName">Copy Tên</button>
-        <button class="btn" id="copyAll">Copy Thông tin</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast hide" id="toast"></div>
-  <script src="./app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
