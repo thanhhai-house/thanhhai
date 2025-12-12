@@ -3,130 +3,160 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini Kiot</title>
+  <title>Kho Phụ Tùng</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <header class="top">
-    <div class="brand">🧾 Mini Kiot</div>
-    <nav class="tabs">
-      <button class="tab active" data-tab="lookup">Tra cứu</button>
-      <button class="tab" data-tab="stats">Thống kê</button>
-      <button class="tab" data-tab="inventory">Nhập/Xuất kho</button>
-      <button class="tab" data-tab="sales">Bán hàng</button>
-      <button class="tab" data-tab="customers">Khách hàng</button>
-      <button class="tab" data-tab="settings">Cài đặt</button>
-      <a class="tab link" href="./data/products.json" target="_blank" rel="noopener">Xem JSON</a>
-    </nav>
+  <header class="header">
+    <div class="header__row">
+      <div class="brand">
+        <div class="brand__logo">⚙️</div>
+        <div class="brand__text">
+          <div class="brand__name">Kho Phụ Tùng</div>
+          <div class="brand__sub">Tra cứu • Danh mục • Tồn kho • Đã bán</div>
+        </div>
+      </div>
+
+      <div class="search">
+        <button class="catBtn" id="catBtn" aria-haspopup="true" aria-expanded="false">☰ Danh mục</button>
+
+        <div class="search__box">
+          <span class="search__icon">🔎</span>
+          <input id="q" placeholder="Tìm theo OEM / thương hiệu / tên / thông tin..." />
+          <button class="search__clear" id="clearQ" title="Xoá">✕</button>
+        </div>
+
+        <button class="btn btn--ghost" id="reloadBtn">↻ Tải lại</button>
+      </div>
+
+      <div class="header__right">
+        <div class="pill" id="kpiTotal">— SP</div>
+        <div class="pill" id="kpiStock">— tồn</div>
+        <div class="pill" id="kpiSold">— bán</div>
+      </div>
+    </div>
+
+    <div class="mega hide" id="mega">
+      <div class="mega__grid">
+        <div class="mega__col">
+          <div class="mega__title">Danh mục</div>
+          <div class="mega__list" id="megaCats"></div>
+        </div>
+        <div class="mega__col">
+          <div class="mega__title">Thương hiệu</div>
+          <div class="mega__chips" id="megaBrands"></div>
+        </div>
+        <div class="mega__col mega__col--note">
+          <div class="mega__title">Mẹo</div>
+          <div class="note">
+            <div class="note__item">• Gõ <b>P559000</b> để tìm theo OEM</div>
+            <div class="note__item">• Lọc theo Danh mục/Brand ở thanh trái</div>
+            <div class="note__item">• Bấm sản phẩm để xem chi tiết</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main class="wrap">
-    <!-- TRA CỨU -->
-    <section id="tab-lookup" class="grid two">
+    <aside class="sidebar">
       <div class="card">
-        <div class="split">
-          <div>
-            <div class="title">Tra cứu sản phẩm</div>
-            <div class="muted">Tìm theo SKU / Barcode / Tên / Danh mục</div>
-          </div>
-          <button class="btn ghost" id="btnReload">↻ Tải lại</button>
+        <div class="card__title">Bộ lọc</div>
+
+        <div class="field">
+          <label>Danh mục (partType)</label>
+          <select id="catFilter"></select>
         </div>
 
-        <div class="row mt12">
-          <div class="field flex2">
-            <label>Từ khóa</label>
-            <input id="q" placeholder="Ví dụ: SP001 / 893... / kem chống nắng" />
+        <div class="field">
+          <label>Thương hiệu</label>
+          <select id="brandFilter"></select>
+        </div>
+
+        <div class="field">
+          <label>Trạng thái tồn</label>
+          <select id="stockFilter">
+            <option value="all">Tất cả</option>
+            <option value="in">Còn hàng</option>
+            <option value="out">Hết hàng</option>
+            <option value="low">Sắp hết (≤ 3)</option>
+          </select>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>Giá từ</label>
+            <input id="minPrice" type="number" placeholder="0" />
           </div>
-          <div class="field w160">
-            <label>&nbsp;</label>
-            <button class="btn" id="btnSearch">Tìm</button>
+          <div class="field">
+            <label>Giá đến</label>
+            <input id="maxPrice" type="number" placeholder="0" />
           </div>
         </div>
 
-        <div id="results" class="list mt12"></div>
+        <div class="field">
+          <label>Sắp xếp</label>
+          <select id="sortBy">
+            <option value="updatedDesc">Mới cập nhật</option>
+            <option value="priceAsc">Giá tăng dần</option>
+            <option value="priceDesc">Giá giảm dần</option>
+            <option value="stockDesc">Tồn giảm dần</option>
+            <option value="soldDesc">Bán giảm dần</option>
+            <option value="nameAsc">Tên A→Z</option>
+          </select>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="applyBtn">Áp dụng</button>
+          <button class="btn btn--ghost" id="resetBtn">Đặt lại</button>
+        </div>
+
+        <div class="muted" id="hint"></div>
       </div>
 
       <div class="card">
-        <div class="title">Chi tiết</div>
-        <div class="muted">Chọn 1 sản phẩm trong danh sách.</div>
-        <div id="detail" class="mt12"></div>
-      </div>
-    </section>
-
-    <!-- THỐNG KÊ -->
-    <section id="tab-stats" class="card hide">
-      <div class="split">
-        <div>
-          <div class="title">Thống kê</div>
-          <div class="muted">Tính từ data/products.json</div>
-        </div>
-        <button class="btn" id="btnStats">↻ Tải thống kê</button>
+        <div class="card__title">Quick Brand</div>
+        <div class="chipWrap" id="brandChips"></div>
       </div>
 
-      <div class="kpis mt12">
-        <div class="kpi"><div class="muted">Tổng sản phẩm</div><div class="v" id="k_total">-</div></div>
-        <div class="kpi"><div class="muted">Tổng tồn</div><div class="v" id="k_stock">-</div></div>
-        <div class="kpi"><div class="muted">Giá trị tồn (giá bán)</div><div class="v" id="k_value_price">-</div></div>
-        <div class="kpi"><div class="muted">Giá trị tồn (giá vốn)</div><div class="v" id="k_value_cost">-</div></div>
-      </div>
-
-      <div class="mt12">
-        <div class="title s14">Theo danh mục</div>
-        <div class="muted">Sắp xếp theo tồn giảm dần</div>
-        <div class="tableWrap mt8">
-          <table>
-            <thead><tr><th>Danh mục</th><th>Số SP</th><th>Tồn</th></tr></thead>
-            <tbody id="cat_rows"></tbody>
-          </table>
+      <div class="card">
+        <div class="card__title">Dữ liệu</div>
+        <div class="muted">Bạn sửa ở <b>data/products.json</b></div>
+        <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+          <a class="btn btn--ghost" href="./data/products.json" target="_blank" rel="noopener">Mở JSON</a>
         </div>
       </div>
-    </section>
+    </aside>
 
-    <!-- CÁC TAB CHƯA LÀM: để trống/placeholder -->
-    <section id="tab-inventory" class="card hide">
-      <div class="title">Nhập/Xuất kho</div>
-      <div class="muted">Trang này đang để trống (đang phát triển).</div>
-    </section>
+    <section class="content">
+      <div class="content__top">
+        <div class="title">Sản phẩm</div>
+        <div class="muted" id="resultCount">—</div>
+      </div>
 
-    <section id="tab-sales" class="card hide">
-      <div class="title">Bán hàng</div>
-      <div class="muted">Trang này đang để trống (đang phát triển).</div>
-    </section>
-
-    <section id="tab-customers" class="card hide">
-      <div class="title">Khách hàng</div>
-      <div class="muted">Trang này đang để trống (đang phát triển).</div>
-    </section>
-
-    <section id="tab-settings" class="card hide">
-      <div class="title">Cài đặt</div>
-      <div class="muted">Trang này đang để trống (đang phát triển).</div>
+      <div class="grid" id="grid"></div>
     </section>
   </main>
 
-  <div id="toast" class="toast hide"></div>
+  <div class="modal hide" id="modal">
+    <div class="modal__backdrop" id="modalClose"></div>
+    <div class="modal__panel">
+      <div class="modal__top">
+        <div class="modal__title" id="mTitle">Chi tiết</div>
+        <button class="iconBtn" id="modalX" title="Đóng">✕</button>
+      </div>
+
+      <div class="modal__body" id="modalBody"></div>
+
+      <div class="modal__bottom">
+        <button class="btn btn--ghost" id="copyOEM">Copy OEM</button>
+        <button class="btn btn--ghost" id="copyName">Copy Tên</button>
+        <button class="btn" id="copyAll">Copy Thông tin</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hide" id="toast"></div>
   <script src="./app.js"></script>
-
-  <script>
-    // Tabs switch (giữ nguyên app.js của bạn, chỉ thêm logic chuyển tab)
-    document.querySelectorAll(".tab[data-tab]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".tab[data-tab]").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        const tab = btn.dataset.tab;
-
-        ["lookup","stats","inventory","sales","customers","settings"].forEach(x => {
-          const el = document.getElementById("tab-" + x);
-          if (el) el.classList.toggle("hide", x !== tab);
-        });
-
-        // nếu có thống kê thì gọi nút stats
-        if (tab === "stats") {
-          const b = document.getElementById("btnStats");
-          if (b) b.click();
-        }
-      });
-    });
-  </script>
 </body>
 </html>
