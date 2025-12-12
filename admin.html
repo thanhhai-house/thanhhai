@@ -1,29 +1,217 @@
 <!doctype html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <title>Admin</title>
+<meta charset="utf-8">
+<title>Admin • Kho Phụ Tùng</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto;
+    background:#0f172a;
+    color:#e5e7eb;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 22px;
+    background:#020617;
+    border-bottom:1px solid #1e293b;
+  }
+  header h1{font-size:18px;margin:0}
+  header a{
+    color:#93c5fd;
+    text-decoration:none;
+    font-size:14px;
+  }
+  main{
+    max-width:1100px;
+    margin:20px auto;
+    padding:0 16px;
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:20px;
+  }
+  .card{
+    background:#020617;
+    border:1px solid #1e293b;
+    border-radius:14px;
+    padding:16px;
+  }
+  .card h3{
+    margin:0 0 12px;
+    font-size:16px;
+    border-bottom:1px solid #1e293b;
+    padding-bottom:8px;
+  }
+  label{
+    font-size:12px;
+    color:#94a3b8;
+    display:block;
+    margin-bottom:4px;
+  }
+  input{
+    width:100%;
+    padding:8px 10px;
+    margin-bottom:10px;
+    border-radius:8px;
+    border:1px solid #1e293b;
+    background:#020617;
+    color:#e5e7eb;
+  }
+  input[type=file]{padding:6px}
+  .row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  button{
+    padding:10px 14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn-primary{
+    background:#2563eb;
+    color:white;
+  }
+  .btn-ghost{
+    background:#020617;
+    color:#93c5fd;
+    border:1px solid #1e293b;
+  }
+  .btn-danger{
+    background:#7f1d1d;
+    color:#fecaca;
+  }
+  .actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+  }
+  .preview{
+    width:100%;
+    height:200px;
+    border-radius:12px;
+    background:#020617;
+    border:1px dashed #334155;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .muted{font-size:12px;color:#94a3b8}
+</style>
 </head>
+
 <body>
-<h2>ADMIN</h2>
 
-<input id="id" placeholder="ID">
-<input id="oem" placeholder="OEM">
-<input id="name" placeholder="Tên">
-<input id="brand" placeholder="Brand">
-<input id="category" placeholder="Category">
-<input id="price" placeholder="Giá">
-<input id="stock" placeholder="Tồn">
-<input type="file" id="img">
+<header>
+  <h1>🛠️ Admin • Kho Phụ Tùng</h1>
+  <a href="index.html">← Xem trang trưng bày</a>
+</header>
 
-<button onclick="upload()">Upload ảnh</button>
-<button onclick="save()">Lưu</button>
+<main>
 
-<hr>
-<input id="qty" placeholder="Số lượng">
-<button onclick="stockIn()">Nhập kho</button>
-<button onclick="stockOut()">Xuất bán</button>
+  <!-- FORM SẢN PHẨM -->
+  <div class="card">
+    <h3>Thông tin sản phẩm</h3>
+
+    <label>ID sản phẩm</label>
+    <input id="id" placeholder="vd: p_001">
+
+    <label>OEM</label>
+    <input id="oem" placeholder="vd: P559000">
+
+    <label>Tên sản phẩm</label>
+    <input id="name" placeholder="vd: Lọc nhớt Cummins">
+
+    <div class="row">
+      <div>
+        <label>Thương hiệu</label>
+        <input id="brand" placeholder="Donaldson">
+      </div>
+      <div>
+        <label>Loại</label>
+        <input id="category" placeholder="Lọc nhớt">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Giá</label>
+        <input id="price" type="number" placeholder="0">
+      </div>
+      <div>
+        <label>Tồn kho</label>
+        <input id="stock" type="number" placeholder="0">
+      </div>
+    </div>
+
+    <label>Ảnh sản phẩm</label>
+    <div class="preview">
+      <img id="previewImg" alt="">
+      <span class="muted" id="noImg">Chưa có ảnh</span>
+    </div>
+    <input type="file" id="img" accept="image/*">
+
+    <div class="actions">
+      <button class="btn-ghost" onclick="upload()">Upload ảnh</button>
+      <button class="btn-primary" onclick="save()">Lưu sản phẩm</button>
+    </div>
+  </div>
+
+  <!-- KHO + ĐIỀU HƯỚNG -->
+  <div class="card">
+    <h3>Nhập / Xuất kho</h3>
+
+    <label>Số lượng</label>
+    <input id="qty" type="number" placeholder="vd: 5">
+
+    <div class="actions">
+      <button class="btn-primary" onclick="stockIn()">Nhập kho</button>
+      <button class="btn-danger" onclick="stockOut()">Xuất bán</button>
+    </div>
+
+    <hr style="border:0;border-top:1px solid #1e293b;margin:20px 0">
+
+    <h3>Hoàn tất</h3>
+    <p class="muted">
+      Sau khi thêm hoặc cập nhật sản phẩm, bạn có thể quay lại trang ngoài để xem sản phẩm hiển thị.
+    </p>
+
+    <div class="actions">
+      <a href="index.html">
+        <button class="btn-ghost">👁️ Xem trang trưng bày</button>
+      </a>
+    </div>
+  </div>
+
+</main>
 
 <script src="admin.js"></script>
+<script>
+  // preview ảnh khi chọn file
+  img.onchange = () => {
+    const f = img.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      previewImg.src = r.result;
+      noImg.style.display="none";
+    };
+    r.readAsDataURL(f);
+  };
+</script>
+
 </body>
 </html>
