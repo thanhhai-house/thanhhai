@@ -1,32 +1,41 @@
 const DB_URL = "./data/products.json";
 let ALL = [];
 
+let state = {
+  q: "",
+  partType: "all",
+  brand: "all",
+  stock: "all",
+  minPrice: "",
+  maxPrice: "",
+  sortBy: "updatedDesc",
+};
+
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => (Number(n || 0)).toLocaleString("vi-VN");
 
-function toast(msg) {
+function toast(msg){
   const t = $("toast");
   t.textContent = msg;
   t.classList.remove("hide");
-  setTimeout(() => t.classList.add("hide"), 2200);
+  setTimeout(()=>t.classList.add("hide"), 2200);
 }
 
-function escapeHtml(str) {
-  return String(str || "").replace(/[&<>"']/g, s => ({
+function escapeHtml(str){
+  return String(str||"").replace(/[&<>"']/g, s => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[s]));
 }
 
-async function loadProducts() {
+async function loadProducts(){
   const res = await fetch(DB_URL, { cache: "no-store" });
-  if (!res.ok) throw new Error("Không tải được products.json");
+  if (!res.ok) throw new Error("Không tải được data/products.json (kiểm tra đường dẫn + tên file)");
   const data = await res.json();
   if (!Array.isArray(data)) throw new Error("products.json phải là mảng []");
   return data;
 }
 
-function normalize(p) {
-  // đảm bảo ảnh chạy đúng khi đặt path tương đối trong JSON
+function normalize(p){
   const img = String(p.image || "");
   const image = img && !img.startsWith("http") && !img.startsWith("./")
     ? "./" + img.replace(/^\//, "")
@@ -34,149 +43,127 @@ function normalize(p) {
 
   return {
     id: String(p.id || ""),
-    sku: String(p.sku || ""),
-    barcode: String(p.barcode || ""),
+    oem: String(p.oem || ""),
+    brand: String(p.brand || ""),
+    partType: String(p.partType || "Khác"), // ✅ dùng partType
     name: String(p.name || ""),
-    category: String(p.category || "Khác"),
+    info: String(p.info || ""),
     price: Number(p.price || 0),
-    cost: Number(p.cost || 0),
     stock: Number(p.stock || 0),
-    image,
+    sold: Number(p.sold || 0),
+    image: image || "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=900&q=60",
     updatedAt: String(p.updatedAt || "")
   };
 }
 
-function renderResults(list) {
-  const box = $("results");
-  box.innerHTML = "";
-  $("detail").innerHTML = "";
+function uniq(arr){
+  return Array.from(new Set(arr.map(x => String(x||"").trim()).filter(Boolean)))
+    .sort((a,b)=>a.localeCompare(b));
+}
 
-  if (!list.length) {
-    box.innerHTML = `<div class="muted">Không có kết quả.</div>`;
-    return;
-  }
+function kpis(){
+  const total = ALL.length;
+  const totalStock = ALL.reduce((s,p)=>s+(p.stock||0),0);
+  const totalSold = ALL.reduce((s,p)=>s+(p.sold||0),0);
+  $("kpiTotal").textContent = `${fmt(total)} SP`;
+  $("kpiStock").textContent = `${fmt(totalStock)} tồn`;
+  $("kpiSold").textContent = `${fmt(totalSold)} bán`;
+}
 
-  for (const p of list) {
+function buildFilters(){
+  const cats = uniq(ALL.map(p => p.partType));
+  const brands = uniq(ALL.map(p => p.brand));
+
+  $("catFilter").innerHTML =
+    `<option value="all">Tất cả</option>` + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+  $("brandFilter").innerHTML =
+    `<option value="all">Tất cả</option>` + brands.map(b => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join("");
+
+  // Mega categories
+  const megaCats = $("megaCats");
+  megaCats.innerHTML = "";
+  cats.forEach(c => {
     const el = document.createElement("div");
-    el.className = "item";
-    el.innerHTML = `
-      ${p.image ? `<img class="thumb" src="${p.image}" onerror="this.style.display='none'">` : `<div class="thumb"></div>`}
-      <div class="meta">
-        <div class="title">${escapeHtml(p.name)}</div>
-        <div class="pills">
-          <span class="pill">SKU: ${escapeHtml(p.sku || "-")}</span>
-          <span class="pill">Barcode: ${escapeHtml(p.barcode || "-")}</span>
-          <span class="pill">Danh mục: ${escapeHtml(p.category || "Khác")}</span>
-        </div>
-        <div class="muted mt8">Giá: <b>${fmt(p.price)}</b> | Tồn: <b>${fmt(p.stock)}</b></div>
-      </div>
-      <div><button class="btn ghost">Xem</button></div>
-    `;
-    el.querySelector("button").addEventListener("click", () => renderDetail(p));
-    box.appendChild(el);
-  }
-}
-
-function renderDetail(p) {
-  $("detail").innerHTML = `
-    <div class="row">
-      ${p.image ? `<img class="thumb" style="width:120px;height:120px" src="${p.image}" onerror="this.style.display='none'">` : `<div class="thumb" style="width:120px;height:120px"></div>`}
-      <div style="flex:1;min-width:240px">
-        <div class="title">${escapeHtml(p.name)}</div>
-        <div class="muted">id: ${escapeHtml(p.id)}</div>
-        <div class="muted">SKU: ${escapeHtml(p.sku || "-")} • Barcode: ${escapeHtml(p.barcode || "-")}</div>
-        <div class="muted">Danh mục: ${escapeHtml(p.category || "Khác")}</div>
-        <div class="muted mt8">Giá: <b>${fmt(p.price)}</b> • Giá vốn: <b>${fmt(p.cost)}</b> • Tồn: <b>${fmt(p.stock)}</b></div>
-        <div class="muted mt8">Updated: ${escapeHtml(p.updatedAt || "-")}</div>
-      </div>
-    </div>
-  `;
-}
-
-function doSearch() {
-  const q = $("q").value.trim().toLowerCase();
-  const list = !q ? ALL : ALL.filter(p => {
-    const hay = `${p.sku} ${p.barcode} ${p.name} ${p.category}`.toLowerCase();
-    return hay.includes(q);
+    el.className = "megaItem";
+    el.innerHTML = `<span>${escapeHtml(c)}</span><span class="small">${fmt(ALL.filter(p=>p.partType===c).length)}</span>`;
+    el.addEventListener("click", ()=>{
+      state.partType = c;
+      syncUI();
+      doSearch();
+      closeMega();
+    });
+    megaCats.appendChild(el);
   });
 
-  list.sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
-  renderResults(list.slice(0, 200));
-}
-
-function computeStats(items) {
-  let totalProducts = items.length;
-  let totalStock = 0;
-  let stockValueByPrice = 0;
-  let stockValueByCost = 0;
-
-  const byCategory = new Map();
-  for (const p of items) {
-    totalStock += p.stock;
-    stockValueByPrice += p.stock * p.price;
-    stockValueByCost += p.stock * p.cost;
-
-    const key = p.category || "Khác";
-    const cur = byCategory.get(key) || { category: key, count: 0, stock: 0 };
-    cur.count += 1;
-    cur.stock += p.stock;
-    byCategory.set(key, cur);
-  }
-
-  const rows = [...byCategory.values()].sort((a,b)=>b.stock-a.stock);
-  return { totalProducts, totalStock, stockValueByPrice, stockValueByCost, byCategory: rows };
-}
-
-function renderStats() {
-  const s = computeStats(ALL);
-  $("k_total").textContent = fmt(s.totalProducts);
-  $("k_stock").textContent = fmt(s.totalStock);
-  $("k_value_price").textContent = fmt(s.stockValueByPrice);
-  $("k_value_cost").textContent = fmt(s.stockValueByCost);
-
-  const body = $("cat_rows");
-  body.innerHTML = "";
-  for (const r of s.byCategory) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${escapeHtml(r.category)}</td><td>${fmt(r.count)}</td><td>${fmt(r.stock)}</td>`;
-    body.appendChild(tr);
-  }
-}
-
-// Tabs
-document.querySelectorAll(".tab[data-tab]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab[data-tab]").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    const tab = btn.dataset.tab;
-    ["lookup","stats"].forEach(x => $("tab-"+x).classList.toggle("hide", x !== tab));
-    if (tab === "stats") renderStats();
+  // Mega brands
+  const megaBrands = $("megaBrands");
+  megaBrands.innerHTML = "";
+  brands.forEach(b => {
+    const el = document.createElement("button");
+    el.className = "chip";
+    el.textContent = b;
+    el.addEventListener("click", ()=>{
+      state.brand = b;
+      syncUI();
+      doSearch();
+      closeMega();
+    });
+    megaBrands.appendChild(el);
   });
-});
 
-// Events
-$("btnReload").addEventListener("click", async () => {
-  try {
-    ALL = (await loadProducts()).map(normalize);
-    toast("Đã tải lại dữ liệu.");
-    doSearch();
-  } catch (e) { toast(e.message || String(e)); }
-});
+  // Sidebar quick brand
+  const chipWrap = $("brandChips");
+  chipWrap.innerHTML = "";
+  brands.slice(0, 18).forEach(b => {
+    const el = document.createElement("button");
+    el.className = "chip";
+    el.textContent = b;
+    el.addEventListener("click", ()=>{
+      state.brand = b;
+      syncUI();
+      doSearch();
+    });
+    chipWrap.appendChild(el);
+  });
+}
 
-$("btnSearch").addEventListener("click", doSearch);
-$("q").addEventListener("input", () => {
-  clearTimeout(window.__t);
-  window.__t = setTimeout(doSearch, 180);
-});
+function badgeStock(stock){
+  if (stock <= 0) return `<span class="tag bad">Hết hàng</span>`;
+  if (stock <= 3) return `<span class="tag warn">Sắp hết</span>`;
+  return `<span class="tag good">Còn hàng</span>`;
+}
 
-$("btnStats").addEventListener("click", renderStats);
+function applyFilters(items){
+  let list = items;
 
-// Init
-(async function init(){
-  try {
-    ALL = (await loadProducts()).map(normalize);
-    doSearch();
-  } catch (e) {
-    toast(e.message || String(e));
+  const q = state.q.trim().toLowerCase();
+  if (q){
+    list = list.filter(p => {
+      const hay = `${p.oem} ${p.brand} ${p.partType} ${p.name} ${p.info}`.toLowerCase();
+      return hay.includes(q);
+    });
   }
-})();
+
+  if (state.partType !== "all") list = list.filter(p => p.partType === state.partType);
+  if (state.brand !== "all") list = list.filter(p => p.brand === state.brand);
+
+  if (state.stock === "in") list = list.filter(p => p.stock > 0);
+  if (state.stock === "out") list = list.filter(p => p.stock <= 0);
+  if (state.stock === "low") list = list.filter(p => p.stock > 0 && p.stock <= 3);
+
+  const minP = Number(state.minPrice || 0);
+  const maxP = Number(state.maxPrice || 0);
+  if (minP > 0) list = list.filter(p => p.price >= minP);
+  if (maxP > 0) list = list.filter(p => p.price <= maxP);
+
+  const sorters = {
+    updatedDesc: (a,b)=> String(b.updatedAt).localeCompare(String(a.updatedAt)),
+    priceAsc: (a,b)=> (a.price||0) - (b.price||0),
+    priceDesc: (a,b)=> (b.price||0) - (a.price||0),
+    stockDesc: (a,b)=> (b.stock||0) - (a.stock||0),
+    soldDesc: (a,b)=> (b.sold||0) - (a.sold||0),
+    nameAsc: (a,b)=> String(a.name||"").localeCompare(String(b.name||"")),
+  };
+
+  return [...list].sort(
