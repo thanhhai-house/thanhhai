@@ -1,4 +1,4 @@
-const DB_URL = "./data/products.json";
+const DB_URL = "https://script.google.com/macros/s/AKfycbzfiyw-8CmWo4SzwGyereCQQog8R5f2sOVa-nCFN_sW-fZZ8ankH1LPqWkoKrrfMtF3Pw/exec";
 let ALL = [];
 
 let state = {
