@@ -166,4 +166,180 @@ function applyFilters(items){
     nameAsc: (a,b)=> String(a.name||"").localeCompare(String(b.name||"")),
   };
 
-  return [...list].sort(
+  return [...list].sort(sorters[state.sortBy] || sorters.updatedDesc);
+}
+
+function render(list){
+  $("resultCount").textContent = `${fmt(list.length)} kết quả`;
+  $("hint").textContent = `Đang lọc: Danh mục=${state.partType} • Brand=${state.brand} • Tồn=${state.stock}`;
+
+  const grid = $("grid");
+  grid.innerHTML = "";
+
+  list.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "pcard";
+    el.innerHTML = `
+      <img class="pimg" src="${p.image}" alt="" onerror="this.src='https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=900&q=60'">
+      <div class="pbody">
+        <div class="ptitle">${escapeHtml(p.name || "-")}</div>
+        <div class="pmeta">
+          <span class="tag">OEM: <b>${escapeHtml(p.oem||"-")}</b></span>
+          <span class="tag">Brand: <b>${escapeHtml(p.brand||"-")}</b></span>
+          <span class="tag">${escapeHtml(p.partType||"Khác")}</span>
+          ${badgeStock(p.stock)}
+        </div>
+        <div class="pprice">
+          <div class="price">${fmt(p.price)}đ</div>
+          <div class="small">Tồn ${fmt(p.stock)} • Bán ${fmt(p.sold)}</div>
+        </div>
+      </div>
+    `;
+    el.addEventListener("click", ()=>openModal(p));
+    grid.appendChild(el);
+  });
+}
+
+function openModal(p){
+  $("modal").classList.remove("hide");
+  $("mTitle").textContent = p.name || "Chi tiết";
+
+  $("modalBody").innerHTML = `
+    <img class="detailImg" src="${p.image}" alt="" onerror="this.src='https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=900&q=60'">
+    <div class="hr"></div>
+
+    <div class="pmeta">
+      <span class="tag">OEM: <b id="oemText">${escapeHtml(p.oem||"-")}</b></span>
+      <span class="tag">Brand: <b id="brandText">${escapeHtml(p.brand||"-")}</b></span>
+      <span class="tag">Danh mục: <b id="typeText">${escapeHtml(p.partType||"Khác")}</b></span>
+      ${badgeStock(p.stock)}
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="pprice">
+      <div class="price">${fmt(p.price)}đ</div>
+      <div class="small">Updated: ${escapeHtml(p.updatedAt||"-")}</div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="muted" style="font-size:13px; line-height:1.55" id="infoText">
+      ${escapeHtml(p.info || "Không có mô tả.")}
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="pmeta">
+      <span class="tag">Tồn: <b>${fmt(p.stock)}</b></span>
+      <span class="tag">Đã bán: <b>${fmt(p.sold)}</b></span>
+      <span class="tag">ID: <b>${escapeHtml(p.id)}</b></span>
+    </div>
+  `;
+
+  $("copyOEM").onclick = async () => {
+    await navigator.clipboard.writeText(p.oem || "");
+    toast("Đã copy OEM");
+  };
+  $("copyName").onclick = async () => {
+    await navigator.clipboard.writeText(p.name || "");
+    toast("Đã copy Tên");
+  };
+  $("copyAll").onclick = async () => {
+    const text = `OEM: ${p.oem}\nBrand: ${p.brand}\nDanh mục: ${p.partType}\nTên: ${p.name}\nGiá: ${p.price}\nTồn: ${p.stock}\nBán: ${p.sold}\nInfo: ${p.info}`;
+    await navigator.clipboard.writeText(text);
+    toast("Đã copy Thông tin");
+  };
+}
+
+function closeModal(){ $("modal").classList.add("hide"); }
+
+/* Mega menu */
+function openMega(){ $("mega").classList.remove("hide"); $("catBtn").setAttribute("aria-expanded","true"); }
+function closeMega(){ $("mega").classList.add("hide"); $("catBtn").setAttribute("aria-expanded","false"); }
+function toggleMega(){ $("mega").classList.contains("hide") ? openMega() : closeMega(); }
+
+/* Search */
+function doSearch(){
+  // read UI -> state
+  state.q = $("q").value;
+  state.partType = $("catFilter").value;
+  state.brand = $("brandFilter").value;
+  state.stock = $("stockFilter").value;
+  state.minPrice = $("minPrice").value;
+  state.maxPrice = $("maxPrice").value;
+  state.sortBy = $("sortBy").value;
+
+  const list = applyFilters(ALL);
+  render(list);
+}
+
+function syncUI(){
+  $("q").value = state.q;
+  $("catFilter").value = state.partType;
+  $("brandFilter").value = state.brand;
+  $("stockFilter").value = state.stock;
+  $("minPrice").value = state.minPrice;
+  $("maxPrice").value = state.maxPrice;
+  $("sortBy").value = state.sortBy;
+}
+
+/* Events */
+$("applyBtn").addEventListener("click", doSearch);
+$("resetBtn").addEventListener("click", ()=>{
+  state = { q:"", partType:"all", brand:"all", stock:"all", minPrice:"", maxPrice:"", sortBy:"updatedDesc" };
+  syncUI(); doSearch();
+});
+
+$("reloadBtn").addEventListener("click", async ()=>{
+  try{
+    ALL = (await loadProducts()).map(normalize);
+    buildFilters();
+    kpis();
+    doSearch();
+    toast("Đã tải lại dữ liệu.");
+  }catch(e){ toast(e.message || String(e)); }
+});
+
+$("q").addEventListener("input", ()=>{
+  clearTimeout(window.__t);
+  window.__t = setTimeout(doSearch, 180);
+});
+$("clearQ").addEventListener("click", ()=>{
+  $("q").value = "";
+  doSearch();
+});
+
+["catFilter","brandFilter","stockFilter","sortBy"].forEach(id=>{
+  $(id).addEventListener("change", doSearch);
+});
+["minPrice","maxPrice"].forEach(id=>{
+  $(id).addEventListener("input", ()=>{
+    clearTimeout(window.__t2);
+    window.__t2 = setTimeout(doSearch, 250);
+  });
+});
+
+$("catBtn").addEventListener("click", toggleMega);
+document.addEventListener("click", (e)=>{
+  const mega = $("mega");
+  const btn = $("catBtn");
+  if (mega.classList.contains("hide")) return;
+  if (mega.contains(e.target) || btn.contains(e.target)) return;
+  closeMega();
+});
+
+$("modalClose").addEventListener("click", closeModal);
+$("modalX").addEventListener("click", closeModal);
+document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") closeModal(); });
+
+/* Init */
+(async function init(){
+  try{
+    ALL = (await loadProducts()).map(normalize);
+    buildFilters();
+    kpis();
+    doSearch();
+  }catch(e){
+    toast(e.message || String(e));
+  }
+})();
