@@ -1,4 +1,22 @@
-body{font-family:sans-serif;background:#111;color:#eee}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,200px);gap:10px}
-.card{background:#222;padding:10px}
-img{width:100%;height:140px;object-fit:cover}
+body{margin:0;font-family:system-ui;background:#0f172a;color:#e5e7eb}
+a{text-decoration:none;color:inherit}
+
+.topbar{display:flex;justify-content:space-between;padding:14px 20px;background:#020617}
+.slider img{width:100%;height:45vh;object-fit:cover}
+
+.filters{display:flex;gap:10px;padding:14px}
+select{padding:8px;border-radius:8px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:20px}
+.card{background:#020617;border-radius:14px;padding:10px}
+.card img{width:100%;height:160px;object-fit:cover;border-radius:10px}
+
+.product-detail{display:flex;gap:20px;padding:20px}
+.detail-img{width:320px;border-radius:14px}
+
+.dashboard{display:flex;gap:14px;padding:20px}
+.box{background:#020617;padding:20px;border-radius:14px;text-align:center}
+.box b{font-size:28px;display:block}
+
+.admin-form{padding:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+button{padding:10px;border-radius:10px;background:#2563eb;color:white;border:0}
