@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="vi">
 <head>
@@ -13,12 +12,16 @@
     <nav class="tabs">
       <button class="tab active" data-tab="lookup">Tra cứu</button>
       <button class="tab" data-tab="stats">Thống kê</button>
+      <button class="tab" data-tab="inventory">Nhập/Xuất kho</button>
+      <button class="tab" data-tab="sales">Bán hàng</button>
+      <button class="tab" data-tab="customers">Khách hàng</button>
+      <button class="tab" data-tab="settings">Cài đặt</button>
       <a class="tab link" href="./data/products.json" target="_blank" rel="noopener">Xem JSON</a>
     </nav>
   </header>
 
   <main class="wrap">
-    <!-- LOOKUP -->
+    <!-- TRA CỨU -->
     <section id="tab-lookup" class="grid two">
       <div class="card">
         <div class="split">
@@ -50,7 +53,7 @@
       </div>
     </section>
 
-    <!-- STATS -->
+    <!-- THỐNG KÊ -->
     <section id="tab-stats" class="card hide">
       <div class="split">
         <div>
@@ -78,9 +81,52 @@
         </div>
       </div>
     </section>
+
+    <!-- CÁC TAB CHƯA LÀM: để trống/placeholder -->
+    <section id="tab-inventory" class="card hide">
+      <div class="title">Nhập/Xuất kho</div>
+      <div class="muted">Trang này đang để trống (đang phát triển).</div>
+    </section>
+
+    <section id="tab-sales" class="card hide">
+      <div class="title">Bán hàng</div>
+      <div class="muted">Trang này đang để trống (đang phát triển).</div>
+    </section>
+
+    <section id="tab-customers" class="card hide">
+      <div class="title">Khách hàng</div>
+      <div class="muted">Trang này đang để trống (đang phát triển).</div>
+    </section>
+
+    <section id="tab-settings" class="card hide">
+      <div class="title">Cài đặt</div>
+      <div class="muted">Trang này đang để trống (đang phát triển).</div>
+    </section>
   </main>
 
   <div id="toast" class="toast hide"></div>
   <script src="./app.js"></script>
+
+  <script>
+    // Tabs switch (giữ nguyên app.js của bạn, chỉ thêm logic chuyển tab)
+    document.querySelectorAll(".tab[data-tab]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab[data-tab]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tab = btn.dataset.tab;
+
+        ["lookup","stats","inventory","sales","customers","settings"].forEach(x => {
+          const el = document.getElementById("tab-" + x);
+          if (el) el.classList.toggle("hide", x !== tab);
+        });
+
+        // nếu có thống kê thì gọi nút stats
+        if (tab === "stats") {
+          const b = document.getElementById("btnStats");
+          if (b) b.click();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
